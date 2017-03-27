@@ -41,7 +41,7 @@ create sequence seq_stock_price_id;
 create table stock_price (
 	id bigint default nextval('seq_stock_price_id'),
     company_id bigint,
-    date bigint not null,
+    timestamp bigint not null,
     close numeric,
     high numeric,
     low numeric,
@@ -52,7 +52,7 @@ create table stock_price (
     constraint stock_price_company_id_fkey foreign key (company_id) references company (id)
 );
 alter sequence seq_stock_price_id owned by stock_price.id;
-create unique index stock_price_company_id_date_idx on stock_price (company_id, date);
+create unique index stock_price_company_id_date_idx on stock_price (company_id, timestamp);
 
 create table workflow_status_code (
 	id integer,
