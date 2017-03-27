@@ -5,9 +5,8 @@ Purpose:
 The purpose of this project is to collect stock price by the minute from Google finance API. It should be scheduled to run once a day after market close.
 
 Requirement:
-
-Postgresql 9.6
-Java 1.8
+1. Postgresql 9.6
+2. Java 1.8
 
 Instruction:
 1. Modify the maven profile in parent pom to set the right database IP, user and password.
