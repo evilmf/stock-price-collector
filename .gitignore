@@ -7,3 +7,5 @@ queue/.classpath
 queue/.settings/*
 queue/.project
 queue/target/*
+.settings/*
+.project
