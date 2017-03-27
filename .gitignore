@@ -1,0 +1,9 @@
+webapp/.settings/*
+webapp/.classpath
+webapp/.project
+webapp/target/*
+webapp/log.txt
+queue/.classpath
+queue/.settings/*
+queue/.project
+queue/target/*
