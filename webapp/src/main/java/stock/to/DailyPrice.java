@@ -4,7 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DailyPrice {
-	private StockMetadata metadata;
+	private long date;
+	private Long companyId;
+	private Integer marketOpenMinute;
+	private Integer marketCloseMinute;
+	private Integer interval;
+	private Integer timezoneOffset;
+	private String exchange;
 
 	private List<Price> priceList;
 
@@ -27,24 +33,6 @@ public class DailyPrice {
 		this.priceList = priceList;
 	}
 
-	public StockMetadata getMetadata() {
-		return metadata;
-	}
-
-	public void setMetadata(StockMetadata metadata) {
-		this.metadata = metadata;
-	}
-
-	@Override
-	public String toString() {
-		String s = String.format(
-				"Prices{exchange=%s, marketOpenMinute=%s, marketCloseMinute=%s, interval=%s, timezoneOffset=%s, numberOfPrice=%s}",
-				metadata.getExchange(), metadata.getMarketOpenMinute(), metadata.getMarketCloseMinute(),
-				metadata.getInterval(), metadata.getTimezoneOffset(), priceList.size());
-
-		return s;
-	}
-
 	public long getCreateDate() {
 		return createDate;
 	}
@@ -59,5 +47,70 @@ public class DailyPrice {
 
 	public void setUpdateDate(long updateDate) {
 		this.updateDate = updateDate;
+	}
+
+	public long getDate() {
+		return date;
+	}
+
+	public void setDate(long date) {
+		this.date = date;
+	}
+
+	public Long getCompanyId() {
+		return companyId;
+	}
+
+	public void setCompanyId(Long companyId) {
+		this.companyId = companyId;
+	}
+
+	public Integer getMarketOpenMinute() {
+		return marketOpenMinute;
+	}
+
+	public void setMarketOpenMinute(Integer marketOpenMinute) {
+		this.marketOpenMinute = marketOpenMinute;
+	}
+
+	public Integer getMarketCloseMinute() {
+		return marketCloseMinute;
+	}
+
+	public void setMarketCloseMinute(Integer marketCloseMinute) {
+		this.marketCloseMinute = marketCloseMinute;
+	}
+
+	public Integer getInterval() {
+		return interval;
+	}
+
+	public void setInterval(Integer interval) {
+		this.interval = interval;
+	}
+
+	public Integer getTimezoneOffset() {
+		return timezoneOffset;
+	}
+
+	public void setTimezoneOffset(Integer timezoneOffset) {
+		this.timezoneOffset = timezoneOffset;
+	}
+
+	public String getExchange() {
+		return exchange;
+	}
+
+	public void setExchange(String exchange) {
+		this.exchange = exchange;
+	}
+
+	@Override
+	public String toString() {
+		String s = String.format(
+				"Prices{exchange=%s, marketOpenMinute=%s, marketCloseMinute=%s, interval=%s, timezoneOffset=%s, numberOfPrice=%s}",
+				exchange, marketOpenMinute, marketCloseMinute, interval, timezoneOffset, priceList.size());
+
+		return s;
 	}
 }

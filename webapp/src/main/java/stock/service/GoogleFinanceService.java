@@ -16,7 +16,6 @@ import org.springframework.web.client.RestTemplate;
 
 import stock.to.Price;
 import stock.to.DailyPrice;
-import stock.to.StockMetadata;
 
 @Service
 public class GoogleFinanceService {
@@ -58,26 +57,24 @@ public class GoogleFinanceService {
 				t = Long.valueOf(ps[0]);
 
 				prices = new DailyPrice(390);
-				StockMetadata metadata = new StockMetadata();
-				metadata.setExchange(exchange);
-				metadata.setInterval(interval);
-				metadata.setMarketOpenMinute(marketOpenMinute);
-				metadata.setMarketCloseMinute(marketCloseMinute);
-				metadata.setTimezoneOffset(timezoneOffset);
-				metadata.setDate(b / 3600 / 24 * 3600 * 24);
-				metadata.setCompanyId(companyId);
-				metadata.setExchange(exchange);
-				prices.setMetadata(metadata);
+				prices.setExchange(exchange);
+				prices.setInterval(interval);
+				prices.setMarketOpenMinute(marketOpenMinute);
+				prices.setMarketCloseMinute(marketCloseMinute);
+				prices.setTimezoneOffset(timezoneOffset);
+				prices.setDate(b / 3600 / 24 * 3600 * 24);
+				prices.setCompanyId(companyId);
+				prices.setExchange(exchange);
 
 				pricesList.add(prices);
 				i = pricesList.size() - 1;
 			} else if (r.startsWith("TIMEZONE_OFFSET")) {
-				pricesList.get(i).getMetadata().setTimezoneOffset(Integer.valueOf(r.split("=")[1]));
+				pricesList.get(i).setTimezoneOffset(Integer.valueOf(r.split("=")[1]));
 				r = reader.readLine();
 				continue;
 			} else {
 				ps = r.split(",");
-				t = b + Long.valueOf(ps[0]) * prices.getMetadata().getInterval();
+				t = b + Long.valueOf(ps[0]) * prices.getInterval();
 			}
 
 			Price p = new Price();
@@ -87,7 +84,6 @@ public class GoogleFinanceService {
 			p.setLow(Double.valueOf(ps[3]));
 			p.setOpen(Double.valueOf(ps[4]));
 			p.setVolume(Long.valueOf(ps[5]));
-			p.setCompanyId(companyId);
 
 			pricesList.get(i).getPriceList().add(p);
 

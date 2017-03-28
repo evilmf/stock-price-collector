@@ -12,22 +12,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import stock.dao.CompanyDao;
 import stock.dao.StockPriceDao;
 import stock.queue.StateQueue;
 import stock.service.GoogleFinanceService;
-import stock.to.Price;
 import stock.to.DailyPrice;
 
 @Component
-public class DataLoader /*implements CommandLineRunner*/ {
+public class DataLoader {
 	@Autowired
 	StateQueue stateQueue;
 
@@ -83,7 +79,6 @@ public class DataLoader /*implements CommandLineRunner*/ {
 						break;
 					}
 
-					Long latestStockPriceTimestamp = stockPriceDao.getLatestStockPriceTimestamp(cid);
 					DailyPrice latestDailyPrice = stockPriceDao.getLatestStockPriceDaily(cid);
 					int numberOfDay = calculateStockPriceTimeRange(latestDailyPrice);
 					if (numberOfDay <= 0) {
@@ -103,29 +98,7 @@ public class DataLoader /*implements CommandLineRunner*/ {
 					log.info("Done fetching stock price for company ID {}. Number of days: {}", cid, pricesList.size());
 
 					for (DailyPrice prices : pricesList) {
-						try {
-							stockPriceDao.insertStockPriceDaily(prices);
-
-							transactionTemplate.execute(new TransactionCallback<Void>() {
-
-								@Override
-								public Void doInTransaction(TransactionStatus ts) {
-									stockPriceDao.insertStockPriceMetadata(prices.getMetadata());
-
-									for (Price p : prices.getPriceList()) {
-										if (latestStockPriceTimestamp == null
-												|| p.getTimestamp() > latestStockPriceTimestamp) {
-											stockPriceDao.insertStockPrice(p);
-										}
-									}
-
-									return null;
-								}
-							});
-						} catch (Exception e) {
-							log.error(e.getMessage(), e);
-							isError = true;
-						}
+						stockPriceDao.insertStockPriceDaily(prices);	
 					}
 
 					Thread.sleep(1000);
@@ -158,14 +131,14 @@ public class DataLoader /*implements CommandLineRunner*/ {
 		}
 
 		Calendar currentTimestamp = Calendar.getInstance();
-		log.info("Running calculateStockPriceTimeRange for {} time {}", dailyPrice.getMetadata().getCompanyId(),
+		log.info("Running calculateStockPriceTimeRange for {} time {}", dailyPrice.getCompanyId(),
 				currentTimestamp.getTime());
 		Calendar latestStockPriceTimestamp = Calendar.getInstance();
-		latestStockPriceTimestamp.setTime(new Date(dailyPrice.getMetadata().getDate() * 1000));
+		latestStockPriceTimestamp.setTime(new Date(dailyPrice.getDate() * 1000));
 		Calendar lastRunTimestamp = Calendar.getInstance();
 		lastRunTimestamp.setTime(new Date(dailyPrice.getUpdateDate()));
 
-		latestStockPriceTimestamp.add(Calendar.MINUTE, dailyPrice.getMetadata().getMarketCloseMinute());
+		latestStockPriceTimestamp.add(Calendar.MINUTE, dailyPrice.getMarketCloseMinute());
 		if (lastRunTimestamp.after(latestStockPriceTimestamp)) {
 			latestStockPriceTimestamp.add(Calendar.DATE, 1);
 		}
@@ -173,7 +146,7 @@ public class DataLoader /*implements CommandLineRunner*/ {
 		latestStockPriceTimestamp.set(Calendar.MINUTE, 0);
 		latestStockPriceTimestamp.set(Calendar.SECOND, 0);
 		latestStockPriceTimestamp.set(Calendar.MILLISECOND, 0);
-		log.info("Running calculateStockPriceTimeRange for {} time {} vs {}", dailyPrice.getMetadata().getCompanyId(),
+		log.info("Running calculateStockPriceTimeRange for {} time {} vs {}", dailyPrice.getCompanyId(),
 				currentTimestamp.getTime(), latestStockPriceTimestamp.getTime());
 		int numOfDay = 0;
 		while (true) {
@@ -194,10 +167,5 @@ public class DataLoader /*implements CommandLineRunner*/ {
 
 		return numOfDay;
 	}
-
-//	@Override
-//	public void run(String... arg0) throws Exception {
-//		load();
-//	}
 	
 }

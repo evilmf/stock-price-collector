@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -27,9 +26,7 @@ public class Application {
 	private String STATE_QUEUE_TABLE;
 	
 	public static void main(String[] args) {
-		ConfigurableApplicationContext ctx = SpringApplication.run(Application.class, args);
-//		ctx.close();
-//		System.exit(0);
+		SpringApplication.run(Application.class, args);
 	}
 
 	@Bean

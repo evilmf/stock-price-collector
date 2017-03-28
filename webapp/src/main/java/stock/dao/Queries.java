@@ -6,16 +6,6 @@ public class Queries {
 	final public static String ALL_COMPANY_QUERY = "select * from company where is_active is true";
 
 	final public static String GET_COMPANY_BY_ID_QUERY = "select * from company where id = ?";
-
-	final public static String INSERT_STOCK_PRICE_QUERY = "insert into stock_price" + LS
-			+ "(id, company_id, timestamp, close, high, low, open, volume, create_date)" + LS
-			+ "values (nextval('seq_stock_price_id'), ?, ?, ?, ?, ?, ?, ?, now())";
-
-	final public static String GET_LATEST_STOCK_PRICE = "select * from stock_price sp where company_id = ? order by timestamp desc limit 1";
-
-	final public static String INSERT_STOCK_METADATA_QUERY = "insert into stock_metadata" + LS
-			+ "(date, company_id, market_open_minute, market_close_minute, interval, timezone_offset, exchange, create_date)" + LS
-			+ "values (?, ?, ?, ?, ?, ?, ?, now()) on conflict (company_id, date) do nothing";
 	
 	final public static String INSERT_STOCK_PRICE_DAILY = "insert into stock_price_daily " + LS
 			+ "(id, date, company_id, market_open_minute, market_close_minute, interval, timezone_offset, exchange, price_list, create_date, update_date)" + LS

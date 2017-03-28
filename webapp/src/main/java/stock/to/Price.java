@@ -3,8 +3,6 @@ package stock.to;
 import java.util.Objects;
 
 public class Price {
-	private long id;
-	private long companyId;
 	private long timestamp;
 	private double close;
 	private double high;
@@ -102,21 +100,5 @@ public class Price {
 	@Override
 	public int hashCode() {
 		return Objects.hash(timestamp, close, high, low, open, volume);
-	}
-
-	public long getId() {
-		return id;
-	}
-
-	public void setId(long id) {
-		this.id = id;
-	}
-
-	public long getCompanyId() {
-		return companyId;
-	}
-
-	public void setCompanyId(long companyId) {
-		this.companyId = companyId;
 	}
 }
