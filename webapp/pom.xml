@@ -85,9 +85,9 @@
 		<profile>
 			<id>dev</id>
 			<properties>
-				<jdbc.url>jdbc:postgresql://192.168.61.136:5432/stock</jdbc.url>
+				<jdbc.url>jdbc:postgresql://${db.ip}:5432/stock</jdbc.url>
 				<db.user>stock</db.user>
-				<db.pass>0228</db.pass>
+				<db.pass>${db.pass}</db.pass>
 			</properties>
 		</profile>
 	</profiles>

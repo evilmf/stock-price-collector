@@ -44,6 +44,12 @@ public class DataLoader {
 	
 	@Value("${webapp.price_loader_thread_pool_size}")
 	private int PRICE_LOADER_THREAD_POOL_SIZE;
+	
+	@Value("${webapp.ticker_monitor_thread_pool_size}")
+	private int TICKER_MONITOR_THREAD_POOL_SIZE; 
+	
+	@Value("#{'${webapp.company_list}'.split(',')}")
+	private List<Long> MONITORING_COMPANY_IDS;
 
 	@Scheduled(cron = "${webapp.price_loader_cron}")
 	public void load() throws InterruptedException {
@@ -54,7 +60,7 @@ public class DataLoader {
 		stateQueue.enqueue(NAMESPACE, companyIds);
 
 		ExecutorService executorService = Executors.newFixedThreadPool(PRICE_LOADER_THREAD_POOL_SIZE);
-		List<Callable<Void>> tasks = new ArrayList<Callable<Void>>(PRICE_LOADER_THREAD_POOL_SIZE);
+		List<Callable<Void>> tasks = new ArrayList<Callable<Void>>(companyIds.size());
 		for (int i = 0; i < PRICE_LOADER_THREAD_POOL_SIZE; i++) {
 			tasks.add(new stockPriceTask());
 		}
@@ -62,6 +68,24 @@ public class DataLoader {
 		executorService.invokeAll(tasks);
 
 		log.info("Done loading!");
+	}
+	
+	@Scheduled(cron = "${webapp.ticker_monitor_cron}")
+	public void monitor() throws InterruptedException {
+		log.info("Start monitoring...");
+
+		log.info("Number of companies to monitor: {}", MONITORING_COMPANY_IDS.size());
+		stateQueue.enqueue(NAMESPACE, MONITORING_COMPANY_IDS);
+
+		ExecutorService executorService = Executors.newFixedThreadPool(TICKER_MONITOR_THREAD_POOL_SIZE);
+		List<Callable<Void>> tasks = new ArrayList<Callable<Void>>(MONITORING_COMPANY_IDS.size());
+		for (int i = 0; i < PRICE_LOADER_THREAD_POOL_SIZE; i++) {
+			tasks.add(new stockPriceTask());
+		}
+
+		executorService.invokeAll(tasks);
+
+		log.info("Done monitoring!");
 	}
 
 	private class stockPriceTask implements Callable<Void> {
@@ -134,11 +158,11 @@ public class DataLoader {
 		log.info("Running calculateStockPriceTimeRange for {} time {}", dailyPrice.getCompanyId(),
 				currentTimestamp.getTime());
 		Calendar latestStockPriceTimestamp = Calendar.getInstance();
-		latestStockPriceTimestamp.setTime(new Date(dailyPrice.getDate() * 1000));
+		latestStockPriceTimestamp.setTime(new Date(dailyPrice.getDate() * 1000 + 7 * 3600 * 1000));
 		Calendar lastRunTimestamp = Calendar.getInstance();
 		lastRunTimestamp.setTime(new Date(dailyPrice.getUpdateDate()));
-
-		latestStockPriceTimestamp.add(Calendar.MINUTE, dailyPrice.getMarketCloseMinute());
+		
+		latestStockPriceTimestamp.add(Calendar.MINUTE, dailyPrice.getMarketCloseMinute() - 3 * 60);
 		if (lastRunTimestamp.after(latestStockPriceTimestamp)) {
 			latestStockPriceTimestamp.add(Calendar.DATE, 1);
 		}
